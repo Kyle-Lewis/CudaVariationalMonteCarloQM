@@ -1,0 +1,8 @@
+simWidth 128
+simHeight 128
+numPoints 4096
+xRange 0.3
+yRange 0.3
+epsilon 0.3
+tau 6000
+mode HarmonicOscillator
