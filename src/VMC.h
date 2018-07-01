@@ -21,12 +21,23 @@
 #include <thrust/execution_policy.h>
 #include <thrust/extrema.h>
 
+#include "WritePNG.h"
+
 // Because CUDA 8.0 doesn't have it
 template<typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 };
 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+};
 
 
 class VMCSimulation
@@ -38,13 +49,6 @@ class VMCSimulation
 		void InitPaths();
 		void RunSimulation();
 		~VMCSimulation();
-
-		// Kernal Calls:
-		//CUDA_KERNEL_MEMBER void Step();
-		// Device Calls:
-		//CUDA_CALLABLE_MEMBER static float Action(float2 point, int idx);
-		//CUDA_CALLABLE_MEMBER static float2 MCTest(float2 newPoint, unsigned int thdIdx);
-		//CUDA_CALLABLE_MEMBER static float Potential(float2 point);
 
 		enum struct Mode : int
 		{
@@ -66,6 +70,9 @@ class VMCSimulation
 			float tau;					// Total Time along a path
 			float dt;					// Time discretization, tau/numPoints
 			Mode mode;					// Determines the form of the potential for the simulation
+			
+			bool recording;
+			unsigned int frames;		// When recording, how many frames to record
 
 		};
 
@@ -92,54 +99,60 @@ class VMCSimulation
 		thrust::device_vector<float3> dColorMap;
 		float3* rawColorMap;
 
+		thrust::host_vector<unsigned char> pixelData;
+		thrust::device_vector<unsigned char> dPixelData;
+		unsigned char* rawPixelData;
 
 		std::unique_ptr<GLInstance> glInstance;
-	private:
-		const char *vertexShaderText = 
-		"#version 450 \n"
-		"layout(location = 0) in vec3 vertexPosition;"
-		"layout(location = 1) in vec3 vertexColor;"
-		"out vec3 color;"
-		"void main() {"
-		"	color = vertexColor;"
-		"	gl_Position = vec4(vertexPosition, 1.0);"
-		"}";
-
-		const char *fragmentShaderText = 
-		"#version 450\n"
-		"in vec3 color;"
-		"out vec4 fragmentColor;"
-		"void main() {"
-		"	fragmentColor = vec4(color, 1.0);"
-		"}";
 };
 
 
-CUDA_KERNEL_MEMBER void Step(float2* rawRingPoints,
-							 float epsilon,
-							 int mode,
-							 float tau, 
-							 float dt, 
-							 int numPoints,
-							 unsigned int redBlack);
+CUDA_KERNEL_MEMBER void Step 			 (float2* rawRingPoints,
+										  float epsilon,
+										  int mode,
+										  float tau, 
+										  float dt, 
+										  int numPoints,
+										  unsigned int redBlack);
 
-CUDA_KERNEL_MEMBER void Zero_Histogram(int* rawBinSums,
-									   unsigned int simHeight,
-									   unsigned int simWidth);
+CUDA_KERNEL_MEMBER void Zero_Histogram 	 (int* rawBinSums,
+									      unsigned int simHeight,
+									      unsigned int simWidth);
 
-CUDA_KERNEL_MEMBER void PopulateBins(int* rawBinSums,
-									 float2* rawRingPoints,
-									 float xRange,
-									 float yRange,
-									 int mode, 
-									 int numPoints,
-									 unsigned int simHeight,
-									 unsigned int simWidth);
+CUDA_KERNEL_MEMBER void PopulateBins	 (int* rawBinSums,
+										  float2* rawRingPoints,
+										  float xRange,
+										  float yRange,
+										  int mode, 
+										  int numPoints,
+										  unsigned int simHeight,
+										  unsigned int simWidth);
 
-CUDA_KERNEL_MEMBER void Color(float3* colors,
-							  float3* colorMap,
-							  int* rawBinSums,
-							  int mapMin,
-							  int mapMax,
-							  unsigned int simWidth,
-							  unsigned int simHeight);
+CUDA_KERNEL_MEMBER void ExpectationEnergy(float2* rawRingPoints,
+										  float* energy,
+										  float dt,
+										  int mode,
+										  int numPoints);
+
+CUDA_KERNEL_MEMBER void Color 			 (float3* colors,
+						  				  float3* colorMap,
+						  				  int* rawBinSums,
+									  	  int mapMin,
+										  int mapMax,
+										  unsigned int simWidth,
+										  unsigned int simHeight);
+
+CUDA_CALLABLE_MEMBER float Action		 (float2* rawRingPoints,
+										  float2 newPoint,
+										  int mode,
+										  float dt,
+										  int numPoints,
+									      unsigned int idx);
+
+CUDA_KERNEL_MEMBER void FormPNGData 	 (float3* colors,
+										  unsigned char* pixelData, 
+										  unsigned int simWidth, 
+										  unsigned int simHeight);
+
+CUDA_CALLABLE_MEMBER float Potential 	 (float2 point,
+					   					  int mode);

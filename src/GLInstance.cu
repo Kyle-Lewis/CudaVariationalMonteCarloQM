@@ -9,22 +9,18 @@ GLInstance::GLInstance(int simWidth, int simHeight)
 	{
 		fprintf(stderr, "ERROR: could not start GLFW3\n");
 	}
-	std::cout<<"happened1"<<std::endl;
-	window = glfwCreateWindow(512, 512, "Cuda Fluid Dynamics", NULL, NULL);
+	window = glfwCreateWindow(simWidth, simHeight, "Cuda Fluid Dynamics", NULL, NULL);
 	glfwSetWindowPos(window, 1920 - 2*simWidth - 2, 0);
-	std::cout<<"happened2"<<std::endl;
 
 	if (!window) 
 	{
 		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
 		glfwTerminate();
 	}
-	std::cout<<"happened3"<<std::endl;
 
 	glfwMakeContextCurrent(window);	
 	glewExperimental = GL_TRUE;
 	glewInit();
-	std::cout<<"happened4"<<std::endl;
 
 		// Init and generate point and color data
 
@@ -91,7 +87,7 @@ GLInstance::GLInstance(int simWidth, int simHeight)
 
 		// vao binding
 
-	GLuint vertexArray = 0;
+	vertexArray = 0;
 	glGenVertexArrays(1, &vertexArray);
 	glBindVertexArray(vertexArray);
 
@@ -103,19 +99,17 @@ GLInstance::GLInstance(int simWidth, int simHeight)
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	std::cout<<"happened7"<<std::endl;
 
 			/////////*** Create shader program ***/////////
 
-	GLuint shaderProgram = glCreateProgram();
+	shaderProgram = glCreateProgram();
 	Link(shaderProgram);
-	std::cout<<"happened8"<<std::endl;
 	
 }
 
 void GLInstance::Link(GLuint& shaderProgram)
 {
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderText, NULL);
 	glCompileShader(vertexShader);
 	int params = -1;
@@ -128,7 +122,7 @@ void GLInstance::Link(GLuint& shaderProgram)
 		std::cout << log;
 		exit(1);
 	}
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderText, NULL);
 	glCompileShader(fragmentShader);
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &params);

@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 
-
-
 // CUDA includes
 #include <vector_types.h>
 #include <cuda_gl_interop.h>
@@ -53,6 +51,8 @@ class GLInstance
 		GLuint pointsVBO;
 		float3* quadPoints;
 		float3* colors;
+		GLuint vertexShader;
+		GLuint fragmentShader;
 		int colorIndexCount;
 		struct cudaGraphicsResource *cudaColorResource;
 

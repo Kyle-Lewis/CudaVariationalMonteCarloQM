@@ -27,41 +27,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "VMC.h",
-			"settings":
-			{
-				"buffer_size": 4188,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "VMC.cu",
-			"settings":
-			{
-				"buffer_size": 17025,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "main.cu",
-			"settings":
-			{
-				"buffer_size": 461,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#pragma once\n\n// openGL includes\n#include <GL/glew.h>\n#define GLFW_DLL\n#include <GLFW/glfw3.h>\n#include <GL/freeglut.h>\n\n\n\n// CUDA includes\n#include <vector_types.h>P\n#include <cuda_gl_interop.h>\n\n// std includes\n#include <stdio.h>\n#include <assert.h>\n#include <iostream>\n#include <stdlib.h>\n#include <unistd.h>\n#include <fstream>\n#include <sstream>\n\ninline \ncudaError_t checkCuda(cudaError_t result){\n\tif (result != cudaSuccess){\n\t\tfprintf(stderr, \"CUDA Runtime Error: %sn\", cudaGetErrorString(result));\n\t\tassert(result==cudaSuccess);\n\t}\n\treturn result;\n}\n\n\nclass GLInstance\n{\n\tpublic: \n\t\tGLInstance(int width, int height);\n\n\t\tvoid InitWindow(int width, int height);\n\n\t\tvoid InitShaders(const char *vertexShaderText, const char *fragmentShaderText, GLuint shaderProgram);\n\t\t\t\t    \t \n\t\tvoid Link(GLuint& shaderProgram);\n\n\t\tvoid Draw();\n\n\t\t~GLInstance();\n\n\t\tGLFWwindow* window;\n\t\tGLuint shaderProgram;\n\t\tGLuint vertexArray;\n\t\tGLuint colorsVBO;\n\t\tGLuint pointsVBO;\n\t\tfloat3* quadPoints;\n\t\tfloat3* colors;\n\t\tGLuint vertexShader;\n\t\tGLuint fragmentShader;\n\t\tint colorIndexCount;\n\t\tstruct cudaGraphicsResource *cudaColorResource;\n\n\tprivate:\n\t\tconst char *vertexShaderText = \n\t\t\"#version 450 \\n\"\n\t\t\"layout(location = 0) in vec3 vertexPosition;\"\n\t\t\"layout(location = 1) in vec3 vertexColor;\"\n\t\t\"out vec3 color;\"\n\t\t\"void main() {\"\n\t\t\"\tcolor = vertexColor;\"\n\t\t\"\tgl_Position = vec4(vertexPosition, 1.0);\"\n\t\t\"}\";\n\n\t\tconst char *fragmentShaderText = \n\t\t\"#version 450\\n\"\n\t\t\"in vec3 color;\"\n\t\t\"out vec4 fragmentColor;\"\n\t\t\"void main() {\"\n\t\t\"\tfragmentColor = vec4(color, 1.0);\"\n\t\t\"}\";\n};\n",
-			"file": "GLInstance.h",
-			"file_size": 1570,
-			"file_write_time": 131573195090000000,
-			"settings":
-			{
-				"buffer_size": 1571,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/Makefile/Make.sublime-build",
 	"build_system_choices":
@@ -217,10 +182,30 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+	],
 	"file_history":
 	[
-		"/home/hobbes/Projects/CudaVMC/src/main.cu",
+		"/home/hobbes/Projects/CudaVMC/Makefile",
+		"/home/hobbes/Projects/CudaVMC/src/Step.cu",
+		"/home/hobbes/Projects/CudaVMC/src/GLInstance.cu",
+		"/home/hobbes/Projects/CudaVMC/src/GLInstance.h",
+		"/home/hobbes/Projects/CudaVMC/src/VMC.h",
+		"/home/hobbes/Projects/CudaVMC/src/ExpectationEnergy.cu",
 		"/home/hobbes/Projects/CudaVMC/src/VMC.cu",
+		"/home/hobbes/Projects/CudaVMC/src/main.cu",
+		"/home/hobbes/Projects/CudaVMC/config",
+		"/home/hobbes/Projects/CudaVMC/video/gifScript",
+		"/home/hobbes/Projects/CudaVMC/src/Zero_Histogram.cu",
+		"/home/hobbes/Projects/CudaVMC/src/Color.cu",
+		"/home/hobbes/Projects/CudaVMC/src/PopulateBins.cu",
+		"/home/hobbes/Projects/CudaVMC/src/Potential.cu",
+		"/home/hobbes/Projects/CudaVMC/src/WritePNG.h",
+		"/home/hobbes/Projects/CudaVMC/data/Hot_Cold_No_Zero",
+		"/home/hobbes/Projects/CudaVMC/src/FormPNGData.cu",
+		"/home/hobbes/Projects/CudaVMC/src/WritePNG.cpp",
+		"/home/hobbes/Projects/CudaVMC/frame_000.png",
 		"/home/hobbes/Projects/CudaVMC/src/GLInstance.cpp",
 		"/home/hobbes/Projects/CudaVMC/src/VMC.sublime-project",
 		"/home/hobbes/Projects/CudaFluidDynamics/tools/Hot_Cold_Colormap",
@@ -244,11 +229,11 @@
 	],
 	"find":
 	{
-		"height": 28.0
+		"height": 32.0
 	},
 	"find_in_files":
 	{
-		"height": 90.0,
+		"height": 97.0,
 		"where_history":
 		[
 			""
@@ -259,6 +244,10 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"puErr",
+			"rawBinSums",
+			"energy",
+			"Colormap",
 			"glInitShaders",
 			"REFRESH_DELAY",
 			"obstructed",
@@ -316,134 +305,18 @@
 	"groups":
 	[
 		{
-			"selected": 2,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "VMC.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4188,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "VMC.cu",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17025,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CUDA C++/cuda-c++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "main.cu",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 461,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CUDA C++/cuda-c++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "GLInstance.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1571,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								349,
-								349
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 28.0
+		"height": 32.0
 	},
 	"input":
 	{
-		"height": 32.0
+		"height": 36.0
 	},
 	"layout":
 	{
@@ -481,10 +354,10 @@
 		"height": 120.0
 	},
 	"pinned_build_system": "Packages/Makefile/Make.sublime-build",
-	"project": "VMC.sublime-project",
+	"project": "cudaMCMC.sublime-project",
 	"replace":
 	{
-		"height": 52.0
+		"height": 60.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -526,7 +399,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 229.0,
+	"side_bar_width": 403.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
