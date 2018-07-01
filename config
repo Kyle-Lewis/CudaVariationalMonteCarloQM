@@ -1,8 +1,14 @@
-simWidth 128
-simHeight 128
-numPoints 4096
+// Simulation settings
+simWidth 512
+simHeight 512
+numPoints 32768
 xRange 0.3
 yRange 0.3
-epsilon 0.3
-tau 6000
-mode HarmonicOscillator
+epsilon 0.02
+tau 20000
+mode DoubleWell
+
+// Recording settings
+recording 0
+frames 300
+
